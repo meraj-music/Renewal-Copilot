@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Renewal Copilot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#F6F7FB; --bg-soft:#EEF0F8; --card:#FFFFFF;
+    --ink:#1C2033; --ink-2:#565C77; --muted:#878DA6;
+    --line:#E6E8F2; --line-soft:#EFF1F8;
+    --accent:#5B5BD6; --accent-2:#7A5AF0; --accent-d:#4744B8; --accent-tint:#ECECFC; --accent-line:#D8D8F6;
+    --good:#0E9F6E; --good-tint:#E4F5EE; --good-line:#C4E9DA;
+    --warn:#B4790C; --warn-tint:#FBF1DA; --warn-line:#EEDCB0;
+    --danger:#D4455E; --danger-tint:#FCE9EC; --danger-line:#F3CDD5;
+    --radius:16px;
+    --shadow:0 1px 2px rgba(30,32,60,.05), 0 12px 32px rgba(60,60,130,.07);
+    --shadow-lg:0 2px 6px rgba(30,32,60,.06), 0 24px 56px rgba(60,60,130,.14);
+    --grad:linear-gradient(135deg,#5B5BD6,#7A5AF0);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;color:var(--ink);
+    background-color:var(--bg);
+    background-image:radial-gradient(rgba(70,72,120,.06) 1px, transparent 1px);
+    background-size:26px 26px;background-position:-8px -8px;
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    line-height:1.55;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:960px;margin:0 auto;padding:30px 20px 72px;}
+  .hidden{display:none!important;}
+  a{color:var(--accent-d);}
+
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;
+    padding-bottom:18px;border-bottom:1px solid var(--line);}
+  .brand{display:flex;align-items:center;gap:13px;}
+  .logo{width:40px;height:40px;border-radius:12px;background:var(--grad);position:relative;flex:none;
+    box-shadow:0 4px 14px rgba(91,91,214,.4);}
+  .logo::after{content:"";position:absolute;inset:11px 11px auto auto;width:11px;height:11px;background:#fff;border-radius:3px;opacity:.95;}
+  .brand h1{font-size:21px;font-weight:700;margin:0;letter-spacing:-.02em;}
+  .brand p{font-size:12.5px;color:var(--muted);margin:2px 0 0;}
+  .ghlink{font-size:12.5px;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+  .ghlink:hover{color:var(--accent-d);}
+
+  .nav{display:inline-flex;gap:4px;margin-bottom:22px;background:var(--bg-soft);border-radius:12px;padding:4px;}
+  .nav button{font:inherit;font-size:14px;font-weight:500;color:var(--muted);background:none;border:none;border-radius:9px;padding:8px 22px;cursor:pointer;transition:background .15s,color .15s;}
+  .nav button.on{background:#fff;color:var(--accent-d);box-shadow:0 1px 3px rgba(60,60,130,.12);}
+  .nav button:hover:not(.on){color:var(--ink);}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 26px;box-shadow:var(--shadow);margin-bottom:18px;}
+  .card h2{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);
+    margin:0 0 18px;display:flex;align-items:center;gap:9px;}
+  .card h2::before{content:"";width:14px;height:2px;border-radius:2px;background:var(--accent);flex:none;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;align-items:start;}
+  @media(max-width:720px){ .grid{grid-template-columns:repeat(2,minmax(0,1fr));} }
+  label.f{display:flex;align-items:flex-end;min-height:34px;font-size:13px;color:var(--muted);margin-bottom:6px;line-height:1.3;}
+  input,select,textarea{width:100%;font:inherit;font-size:14.5px;color:var(--ink);background:#fff;
+    border:1px solid var(--line);border-radius:10px;padding:10px 12px;transition:border-color .15s,box-shadow .15s;}
+  input:hover,select:hover{border-color:var(--accent-line);}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint);}
+
+  .verdict{border-radius:14px;padding:20px 22px;margin-bottom:18px;border:1px solid var(--line);border-left-width:4px;}
+  .verdict .tag{font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
+  .verdict .headline{font-size:21px;font-weight:700;margin:6px 0 7px;letter-spacing:-.02em;}
+  .verdict .body{font-size:14px;color:var(--ink-2);}
+  .v-good{background:var(--good-tint);border-color:var(--good-line);border-left-color:var(--good);}
+  .v-good .tag,.v-good .headline{color:var(--good);}
+  .v-up{background:var(--accent-tint);border-color:var(--accent-line);border-left-color:var(--accent);}
+  .v-up .tag,.v-up .headline{color:var(--accent-d);}
+  .v-warn{background:var(--warn-tint);border-color:var(--warn-line);border-left-color:var(--warn);}
+  .v-warn .tag,.v-warn .headline{color:var(--warn);}
+  .v-danger{background:var(--danger-tint);border-color:var(--danger-line);border-left-color:var(--danger);}
+  .v-danger .tag,.v-danger .headline{color:var(--danger);}
+
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;}
+  .metric{background:var(--bg-soft);border-radius:12px;padding:14px 16px;}
+  .metric .k{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
+  .metric .v{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-top:3px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .metric .s{font-size:11.5px;color:var(--muted);margin-top:1px;}
+
+  .viz{margin-top:4px;}
+  .viz .lbl{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin:0 0 6px;}
+  .meter{height:12px;border-radius:8px;background:var(--bg-soft);overflow:hidden;}
+  .meter i{display:block;height:100%;border-radius:8px;}
+  .bars{margin-top:18px;display:grid;gap:10px;}
+  .barrow{display:grid;grid-template-columns:120px 1fr auto;align-items:center;gap:12px;font-size:13px;}
+  .barrow .track{background:var(--bg-soft);border-radius:8px;height:26px;position:relative;overflow:hidden;}
+  .barrow .fill{height:100%;border-radius:8px;background:var(--accent);}
+  .barrow .fill.cur{background:#B9BCE8;}
+  .barrow b{font-variant-numeric:tabular-nums;}
+
+  .points{background:var(--bg-soft);border-radius:12px;padding:15px 17px;font-size:14px;margin-top:16px;}
+  .points ul{margin:8px 0 0;padding-left:18px;}
+  .points li{margin-bottom:6px;color:var(--ink-2);}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center;}
+  .btn{font:inherit;font-size:14px;font-weight:600;color:#fff;background:var(--accent);border:none;
+    border-radius:10px;padding:11px 20px;cursor:pointer;transition:background .15s,transform .08s,box-shadow .15s;
+    box-shadow:0 2px 8px rgba(91,91,214,.28);}
+  .btn:hover{background:var(--accent-d);box-shadow:0 4px 14px rgba(91,91,214,.34);}
+  .btn:active{transform:translateY(1px);}
+  .btn.copied{background:var(--good);box-shadow:none;}
+  .btn.ghost{background:#fff;color:var(--accent-d);border:1px solid var(--accent-line);box-shadow:none;}
+  .btn.ghost:hover{background:var(--accent-tint);}
+  .emailbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+  .emailbar select,.emailbar input{width:auto;flex:1;min-width:150px;font-size:13.5px;padding:9px 11px;}
+  .emailout{width:100%;margin-top:14px;font-family:'Inter',sans-serif;font-size:13.5px;line-height:1.55;
+    background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;resize:vertical;}
+
+  .renewalpill{display:inline-flex;align-items:center;font-size:12.5px;padding:5px 12px;border-radius:20px;border:1px solid transparent;}
+  .rn-ok{background:var(--bg-soft);color:var(--muted);}
+  .rn-soon{background:var(--warn-tint);color:var(--warn);border-color:var(--warn-line);}
+  .rn-warn{background:var(--danger-tint);color:var(--danger);border-color:var(--danger-line);}
+
+  /* pipeline */
+  .source{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+  details.guide{border:1px solid var(--accent-line);background:var(--accent-tint);border-radius:12px;padding:13px 16px;margin-bottom:16px;}
+  details.guide summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--accent-d);list-style:none;display:flex;justify-content:space-between;gap:10px;}
+  details.guide summary::-webkit-details-marker{display:none;}
+  details.guide summary .est{font-weight:500;color:var(--accent);font-size:12.5px;}
+  details.guide summary::after{content:'+';font-weight:700;}
+  details.guide[open] summary::after{content:'\2013';}
+  .guide-body{margin-top:12px;}
+  .guide-body ol{margin:0 0 12px;padding-left:20px;font-size:13px;line-height:1.7;color:var(--ink-2);}
+  .guide-body code{background:#fff;border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:12px;}
+  .conn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px;}
+  .conn-row input{flex:1;min-width:200px;}
+  .src-status{font-size:12.5px;color:var(--muted);margin-top:10px;}
+  .linkbtn{font:inherit;font-size:12.5px;color:var(--accent-d);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;}
+  .pipe-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+  .pipe-controls select{width:auto;min-width:150px;}
+  .pipe-scroll{overflow:auto;max-height:70vh;border-radius:10px;}
+  table.pipe{width:100%;border-collapse:collapse;font-size:13px;}
+  table.pipe th,table.pipe td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line-soft);white-space:nowrap;}
+  table.pipe thead th{font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;
+    border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card);z-index:1;box-shadow:0 1px 0 var(--line);}
+  table.pipe tbody tr:nth-child(even){background:rgba(238,240,248,.5);}
+  table.pipe tbody tr:hover{background:var(--accent-tint);}
+  .hpill{font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;display:inline-block;}
+  .h-good{background:var(--good-tint);color:var(--good);}
+  .h-watch{background:var(--warn-tint);color:var(--warn);}
+  .h-risk{background:var(--danger-tint);color:var(--danger);}
+  .pipe-open{font:inherit;font-size:12px;color:var(--accent-d);background:none;border:1px solid var(--accent-line);border-radius:7px;padding:4px 10px;cursor:pointer;margin-left:8px;}
+  .pipe-open:hover{background:var(--accent-tint);}
+  .empty{text-align:center;color:var(--muted);font-size:14px;padding:26px 10px;line-height:1.7;}
+  .foot{font-size:12px;color:var(--muted);text-align:center;margin-top:28px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo"></div>
+      <div><h1>Renewal Copilot</h1><p>Right-size every renewal in a few clicks</p></div>
+    </div>
+    <a class="ghlink" id="cfgBtn" href="#">Settings</a>
+  </header>
+
+  <div class="nav">
+    <button id="navAccount" class="on">Advisor</button>
+    <button id="navPipeline">Pipeline</button>
+  </div>
+
+  <!-- ============ ADVISOR ============ -->
+  <div id="accountView">
+    <div class="card">
+      <h2>Account</h2>
+      <div class="grid">
+        <div><label class="f" for="customer">Customer</label><input type="text" id="customer" placeholder="Acme Corp" /></div>
+        <div><label class="f" for="plan">Current plan</label><input type="text" id="plan" placeholder="Growth" /></div>
+        <div><label class="f" for="limit">Yearly commitment ($)</label><input type="number" id="limit" step="1000" value="100000" /></div>
+        <div><label class="f" for="fee">Service fee %</label><input type="number" id="fee" step="0.1" value="8" /></div>
+        <div><label class="f" for="adoption">Usage (%)</label><input type="number" id="adoption" step="1" min="0" max="200" value="82" /></div>
+        <div><label class="f" for="renewal">Renewal date</label><input type="date" id="renewal" /></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Recommendation</h2>
+      <div id="renewalNote" style="margin-bottom:12px;"></div>
+      <div class="verdict" id="verdict"></div>
+      <div class="metrics" id="metrics"></div>
+      <div class="viz" id="viz"></div>
+      <div class="points" id="points"></div>
+      <div class="emailbar">
+        <select id="emailType">
+          <option value="renewal">Renewal outreach (heads-up)</option>
+          <option value="final">Final reminder</option>
+          <option value="play">Recommendation email</option>
+        </select>
+        <input type="text" id="repname" placeholder="Your name (optional)" />
+      </div>
+      <div class="actions">
+        <button class="btn" id="copyPoints">Copy talking points</button>
+        <button class="btn ghost" id="copyEmail">Copy email draft</button>
+      </div>
+      <textarea class="emailout hidden" id="emailOut" rows="15"></textarea>
+    </div>
+  </div>
+
+  <!-- ============ PIPELINE ============ -->
+  <div id="pipelineView" class="hidden">
+    <div class="card">
+      <h2>Renewal pipeline</h2>
+
+      <div class="source">
+        <label class="btn ghost" style="cursor:pointer;">Import CSV
+          <input type="file" id="csvFile" accept=".csv,text/csv" style="display:none;" />
+        </label>
+        <button class="btn ghost" id="tplBtn">Download CSV template</button>
+      </div>
+
+      <details class="guide">
+        <summary><span>Connect a Google Sheet instead</span><span class="est">setup ~5–10 min</span></summary>
+        <div class="guide-body">
+          <ol>
+            <li>Go to <a href="https://console.cloud.google.com" target="_blank" rel="noopener">Google Cloud Console</a> and create (or pick) a project.</li>
+            <li><b>APIs &amp; Services → Library</b> → search <b>Google Sheets API</b> → <b>Enable</b>.</li>
+            <li><b>OAuth consent screen</b>: choose <b>External</b>, fill the basics, and add your own email under <b>Test users</b> (Internal if you're on Google Workspace).</li>
+            <li><b>Credentials → Create credentials → OAuth client ID → Web application</b>. Under <b>Authorized JavaScript origins</b> add wherever you open this app — e.g. <code>http://localhost:8080</code> and your hosting URL.</li>
+            <li>Copy the <b>Client ID</b> below, paste your sheet link, and Connect. Put your renewals on the <b>first tab</b> with headers in row 1 (see the CSV template for column names).</li>
+          </ol>
+          <div class="conn-row">
+            <input type="text" id="clientId" placeholder="OAuth Client ID (…apps.googleusercontent.com)" />
+          </div>
+          <div class="conn-row">
+            <input type="text" id="sheetUrl" placeholder="Google Sheet link" />
+            <button class="btn" id="connectBtn">Connect</button>
+          </div>
+          <div class="src-status" id="srcStatus"></div>
+        </div>
+      </details>
+
+      <div id="pipeBody">
+        <div class="empty" id="pipeEmpty">No renewals loaded yet.<br>Import a CSV or connect a Google Sheet to get started.</div>
+        <div id="pipeLoaded" class="hidden">
+          <div class="pipe-controls">
+            <select id="ownerFilter"><option value="">All owners</option></select>
+            <select id="healthFilter">
+              <option value="">All health</option>
+              <option value="good">Healthy</option>
+              <option value="watch">Watch</option>
+              <option value="risk">At-risk</option>
+            </select>
+            <button class="btn ghost" id="clearData">Clear</button>
+            <span id="pipeCount" style="font-size:13px;color:var(--muted);"></span>
+          </div>
+          <div class="metrics" id="pipeOverview" style="margin-bottom:16px;"></div>
+          <div class="pipe-scroll"><table class="pipe" id="pipeTable"></table></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot" id="foot"></div>
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+(function(){
+  /* ================= CONFIG (tweak freely) ================= */
+  var CONFIG = {
+    productName: "Renewal Copilot",
+    githubUrl: "",                 // optional: your repo link (shows in footer)
+    currency: "USD",
+    upliftPct: 7,                  // standard renewal uplift for healthy accounts
+    expansionPct: 20,              // suggested expansion for high-adoption accounts
+    upsellThreshold: 85,           // adoption % at/above -> upsell
+    healthyThreshold: 55,          // adoption % -> healthy renew
+    atRiskThreshold: 40,           // adoption % below -> churn risk
+    paygPct: 12,                   // on-demand / pay-as-you-go rate, for comparison
+    outreach1Days: 60,             // first outreach window
+    outreach2Days: 14,             // final reminder window
+    signatureRole: "Customer Success"
+  };
+
+  var usd = new Intl.NumberFormat('en-US',{style:'currency',currency:CONFIG.currency,maximumFractionDigits:0});
+  var usdC = new Intl.NumberFormat('en-US',{style:'currency',currency:CONFIG.currency,notation:'compact',maximumFractionDigits:1});
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function pnum(s){ var n=parseFloat(String(s==null?'':s).replace(/[^0-9.\-]/g,'')); return isNaN(n)?null:n; }
+
+  if(CONFIG.githubUrl){ document.getElementById('foot').innerHTML='Open source · <a href="'+CONFIG.githubUrl+'" target="_blank" rel="noopener">View on GitHub</a> · Figures are guidance, not a quote.'; }
+  else { document.getElementById('foot').textContent='Open-source renewal advisor · figures are guidance, not a quote.'; }
+
+  /* ================= tabs ================= */
+  function showView(name){
+    var acc=name!=='pipeline';
+    document.getElementById('accountView').classList.toggle('hidden',!acc);
+    document.getElementById('pipelineView').classList.toggle('hidden',acc);
+    document.getElementById('navAccount').classList.toggle('on',acc);
+    document.getElementById('navPipeline').classList.toggle('on',!acc);
+  }
+  document.getElementById('navAccount').addEventListener('click',function(){showView('account');});
+  document.getElementById('navPipeline').addEventListener('click',function(){showView('pipeline');});
+  document.getElementById('cfgBtn').addEventListener('click',function(e){ e.preventDefault();
+    alert('Customize thresholds, uplift %, currency and more in the CONFIG object at the top of this file\'s <script> — no build step needed.'); });
+
+  /* ================= advisor engine ================= */
+  function recommend(acv, adoption){
+    var r={ churn:'Low' };
+    if(adoption>=CONFIG.upsellThreshold){
+      r.move='upsell'; r.tag='Expansion opportunity'; r.cls='v-up'; r.headline='Expand — adoption is strong';
+      r.suggested=Math.round(acv*(1+CONFIG.expansionPct/100)); r.churn='Low';
+      r.body='At '+adoption+'% adoption they’re getting real value. Lead the renewal with expansion — more seats, usage, or modules. A ~'+CONFIG.expansionPct+'% uplift to '+usd.format(r.suggested)+' is a fair ask given the value delivered.';
+    } else if(adoption>=CONFIG.healthyThreshold){
+      r.move='renew'; r.tag='Renew & grow'; r.cls='v-good'; r.headline='Healthy — renew with an uplift';
+      r.suggested=Math.round(acv*(1+CONFIG.upliftPct/100)); r.churn='Low';
+      r.body='Adoption is healthy at '+adoption+'%. Renew with a standard '+CONFIG.upliftPct+'% uplift to '+usd.format(r.suggested)+', and probe for a modest expansion if usage is trending up.';
+    } else if(adoption>=CONFIG.atRiskThreshold){
+      r.move='flat'; r.tag='Renew — reinforce value'; r.cls='v-warn'; r.headline='Soft adoption — renew flat';
+      r.suggested=acv; r.churn='Medium';
+      r.body='Adoption is soft at '+adoption+'%. Renew flat and invest in driving usage before pushing price — protect the account first, then grow it next cycle.';
+    } else {
+      r.move='retain'; r.tag='At-risk — retention'; r.cls='v-danger'; r.headline='Churn risk — lead with value';
+      r.suggested=acv; r.churn='High';
+      r.body='Low adoption at '+adoption+'% is a churn signal. Lead with value and a get-well plan, and hold pricing. Offer flexibility (a shorter term or right-sizing) only to prevent a full loss — don’t volunteer discounts.';
+    }
+    r.delta=r.suggested-acv; r.deltaPct = acv? r.delta/acv*100 : 0;
+    return r;
+  }
+  function healthOf(adoption){
+    if(adoption==null||isNaN(adoption)) return {k:'watch',t:'Unknown'};
+    if(adoption>=CONFIG.healthyThreshold) return {k:'good',t:'Healthy'};
+    if(adoption>=CONFIG.atRiskThreshold) return {k:'watch',t:'Watch'};
+    return {k:'risk',t:'At-risk'};
+  }
+  function daysTo(dateStr){ if(!dateStr) return null; var d=new Date(dateStr); if(isNaN(d)) return null;
+    var t=new Date(); t.setHours(0,0,0,0); d.setHours(0,0,0,0); return Math.round((d-t)/86400000); }
+
+  /* ================= advisor render ================= */
+  var limit=document.getElementById('limit'), fee=document.getElementById('fee'), adoption=document.getElementById('adoption'),
+      customer=document.getElementById('customer'), plan=document.getElementById('plan'), renewal=document.getElementById('renewal');
+  function metric(k,val,s){ return '<div class="metric"><div class="k">'+k+'</div><div class="v">'+val+'</div><div class="s">'+s+'</div></div>'; }
+
+  function render(){
+    var L=+limit.value||0, F=parseFloat(fee.value)||0, U=+adoption.value||0;
+    var A=F/100*L;                                   // committed fee = your annual revenue
+    var usage=U/100*L, payg=CONFIG.paygPct/100, paygCost=payg*usage;
+    var effRate = usage>0 ? A/usage*100 : F, be = payg>0 ? A/payg : 0;
+    var r=recommend(A,U);
+    var suggestedLimit = r.move==='upsell' ? Math.round(L*(1+CONFIG.expansionPct/100)) : L;
+
+    var vb=document.getElementById('verdict'); vb.className='verdict '+r.cls;
+    vb.innerHTML='<div class="tag">'+r.tag+'</div><div class="headline">'+esc(r.headline)+'</div><div class="body">'+r.body+'</div>';
+
+    var churnCls = r.churn==='High'?'var(--danger)':r.churn==='Medium'?'var(--warn)':'var(--good)';
+    document.getElementById('metrics').innerHTML=
+      metric('Annual fee', usd.format(A), 'what they pay you')+
+      metric('Recommended', usd.format(r.suggested), (r.delta>0?'+':'')+(A?Math.round(r.deltaPct):0)+'% at renewal')+
+      metric('Usage', U+'%', 'of their commitment')+
+      metric('Rate paid', usage>0?effRate.toFixed(1)+'%':'—', 'vs '+CONFIG.paygPct+'% on-demand')+
+      metric('On-demand cost', usd.format(paygCost), 'if pay-as-you-go')+
+      '<div class="metric"><div class="k">Renewal risk</div><div class="v" style="color:'+churnCls+'">'+r.churn+'</div><div class="s">of not renewing</div></div>';
+
+    var mc = U>=CONFIG.healthyThreshold?'var(--good)':U>=CONFIG.atRiskThreshold?'var(--warn)':'var(--danger)';
+    var maxV=Math.max(A,paygCost,r.suggested,1);
+    document.getElementById('viz').innerHTML=
+      '<div class="lbl"><span>Utilization of commitment</span><span>'+U+'%</span></div>'+
+      '<div class="meter"><i style="width:'+Math.min(100,U)+'%;background:'+mc+'"></i></div>'+
+      '<div class="bars">'+
+        '<div class="barrow"><span>Committed fee</span><div class="track"><div class="fill" style="width:'+(A/maxV*100)+'%"></div></div><b>'+usd.format(A)+'</b></div>'+
+        '<div class="barrow"><span>On-demand equiv</span><div class="track"><div class="fill cur" style="width:'+(paygCost/maxV*100)+'%"></div></div><b>'+usd.format(paygCost)+'</b></div>'+
+        '<div class="barrow"><span>Recommended</span><div class="track"><div class="fill" style="width:'+(r.suggested/maxV*100)+'%"></div></div><b>'+usd.format(r.suggested)+'</b></div>'+
+      '</div>';
+
+    var pts=[];
+    if(r.move==='upsell') pts.push('Upsell: raise the commitment to '+usd.format(suggestedLimit)+' → committed fee ~'+usd.format(r.suggested)+' ('+(r.delta>=0?'+':'')+usd.format(r.delta)+').');
+    else pts.push('Recommended renewal fee: '+usd.format(r.suggested)+' ('+(r.delta>=0?'+':'')+usd.format(r.delta)+' / '+(r.delta>=0?'+':'')+Math.round(r.deltaPct)+'%).');
+    if(usage>0) pts.push('Effective rate '+effRate.toFixed(1)+'% vs '+CONFIG.paygPct+'% on-demand — the commitment '+(A<=paygCost?'saves ~'+usd.format(paygCost-A):'costs ~'+usd.format(A-paygCost)+' more')+' at current usage.');
+    pts.push('Break-even: the commitment pays off once usage passes '+usd.format(be)+'.');
+    pts.push('Utilization '+U+'% → '+healthOf(U).t+' · churn risk '+r.churn+'.');
+    var d=daysTo(renewal.value);
+    if(d!=null) pts.push('Renews in '+d+' day'+(d===1?'':'s')+(d<=CONFIG.outreach2Days?' — final-reminder window.':d<=CONFIG.outreach1Days?' — inside the outreach window.':'.'));
+    if(r.move==='retain') pts.push('Retention first: book a value review, agree a get-well plan, and keep the term intact if you can.');
+    document.getElementById('points').innerHTML='<strong style="font-size:13px">Talking points</strong><ul>'+pts.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
+
+    renewalStatus();
+    window._points = r.headline+'\n\n'+r.body+'\n\n'+pts.map(function(x){return '• '+x;}).join('\n');
+    window._r=r;
+    var eo=document.getElementById('emailOut'); if(!eo.classList.contains('hidden')) eo.value=buildEmail();
+  }
+  function renewalStatus(){
+    var el=document.getElementById('renewalNote'), d=daysTo(renewal.value);
+    if(d==null){ el.innerHTML=''; return; }
+    var cls,txt;
+    if(d<0){ cls='rn-warn'; txt='Renewal was '+(-d)+' day'+(-d===1?'':'s')+' ago — follow up.'; }
+    else if(d<=CONFIG.outreach2Days){ cls='rn-warn'; txt='Renews in '+d+' day'+(d===1?'':'s')+' — final-reminder window.'; }
+    else if(d<=CONFIG.outreach1Days){ cls='rn-soon'; txt='Renews in '+d+' days — time to reach out.'; }
+    else { cls='rn-ok'; txt='Renews in '+d+' days.'; }
+    el.innerHTML='<span class="renewalpill '+cls+'">'+txt+'</span>';
+  }
+
+  /* ================= emails ================= */
+  function repVal(){ var r=document.getElementById('repname'); return (r&&r.value.trim())||'[Your name]'; }
+  function cust(){ return (customer.value.trim())||'[Customer]'; }
+  function fmtDate(v){ if(!v) return '[renewal date]'; var d=new Date(v+'T00:00:00'); return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}); }
+  function buildEmail(){
+    var t=document.getElementById('emailType').value, r=window._r||recommend((parseFloat(fee.value)||0)/100*(+limit.value||0),+adoption.value||0), L=[];
+    if(t==='final'){
+      L.push('Subject: Final reminder — your renewal on '+fmtDate(renewal.value),'',
+        'Hi [First name],','',
+        'A quick heads-up that '+cust()+'’s subscription is set to renew on '+fmtDate(renewal.value)+'. This is a final reminder before it rolls over.',
+        '','If you’d like to review anything or make changes, I’m happy to jump on a short call this week. Otherwise it’ll renew as-is.','');
+    } else if(t==='play'){
+      L.push('Subject: A quick recommendation ahead of your renewal','',
+        'Hi [First name],','',
+        'Ahead of '+cust()+'’s renewal on '+fmtDate(renewal.value)+', I took a look at how things are going. '+r.body,
+        '','Happy to walk through the details and make sure the plan fits where you’re headed.','');
+    } else {
+      L.push('Subject: '+cust()+' renewal — quick heads-up','',
+        'Hi [First name],','',
+        'I’m reaching out because '+cust()+'’s subscription is coming up for renewal on '+fmtDate(renewal.value)+'. I’d love to set up a quick review to make sure everything still fits your goals for the year.',
+        '','If helpful, I can share how your team’s been using the platform and where we see room to get more value. What does your calendar look like this week?','');
+    }
+    L.push('Best,',repVal(),CONFIG.signatureRole);
+    return L.join('\n');
+  }
+
+  [limit,fee,adoption,customer,plan,renewal].forEach(function(el){ el.addEventListener('input',render); });
+  renewal.addEventListener('change',render);
+  document.getElementById('emailType').addEventListener('change',function(){ var eo=document.getElementById('emailOut'); if(!eo.classList.contains('hidden')) eo.value=buildEmail(); });
+  document.getElementById('repname').addEventListener('input',function(){ var eo=document.getElementById('emailOut'); if(!eo.classList.contains('hidden')) eo.value=buildEmail(); });
+  document.getElementById('copyPoints').addEventListener('click',function(){ var b=this; navigator.clipboard.writeText(window._points||''); b.textContent='Copied'; b.classList.add('copied'); setTimeout(function(){b.textContent='Copy talking points';b.classList.remove('copied');},1500); });
+  document.getElementById('copyEmail').addEventListener('click',function(){ var b=this, eo=document.getElementById('emailOut'); eo.classList.remove('hidden'); eo.value=buildEmail(); navigator.clipboard.writeText(eo.value); b.textContent='Email copied'; b.classList.add('copied'); setTimeout(function(){b.textContent='Copy email draft';b.classList.remove('copied');},1500); });
+
+  /* ================= pipeline: data ================= */
+  var PIPE=[];  // normalized rows
+  function colFind(head,keys){ for(var i=0;i<head.length;i++){ for(var k=0;k<keys.length;k++){ if(head[i].indexOf(keys[k])>-1) return i; } } return -1; }
+  function toRows(matrix){
+    if(!matrix||matrix.length<2) return [];
+    var head=matrix[0].map(function(x){return String(x||'').toLowerCase();});
+    var c={ customer:colFind(head,['customer','account','buyer','company','client','name']),
+      owner:colFind(head,['owner','csm','rep','manager','handler']),
+      renewal:colFind(head,['renewal','renew','expir','end date']),
+      plan:colFind(head,['plan','tier','package','product']),
+      limit:colFind(head,['commitment','spend limit','limit']),
+      feePct:colFind(head,['fee %','service fee','fee','rate']),
+      acv:colFind(head,['annual fee','acv','arr','contract value','revenue']),
+      adoption:colFind(head,['usage','adoption','utiliz','active']),
+      status:colFind(head,['status','stage','response']),
+      notes:colFind(head,['notes','note','comment']) };
+    var out=[];
+    for(var i=1;i<matrix.length;i++){ var row=matrix[i]||[]; var g=function(idx){return idx>-1?String(row[idx]==null?'':row[idx]):'';};
+      var name=g(c.customer).trim(); if(!name) continue;
+      var lim=pnum(g(c.limit)), fpct=pnum(g(c.feePct)), av=pnum(g(c.acv));
+      if(av==null && lim!=null && fpct!=null) av=Math.round(fpct/100*lim);
+      out.push({ customer:name, owner:g(c.owner).trim(), renewal:g(c.renewal).trim(), plan:g(c.plan).trim(),
+        limit:lim, feePct:fpct, acv:av, adoption:pnum(g(c.adoption)), status:g(c.status).trim(), notes:g(c.notes).trim() }); }
+    return out;
+  }
+  function setPipe(rows){ PIPE=rows; try{ localStorage.setItem('rc_pipe', JSON.stringify(rows)); }catch(e){}
+    document.getElementById('pipeEmpty').classList.toggle('hidden', rows.length>0);
+    document.getElementById('pipeLoaded').classList.toggle('hidden', rows.length===0);
+    if(rows.length){ var owners=[]; rows.forEach(function(x){ if(x.owner && owners.indexOf(x.owner)<0) owners.push(x.owner); });
+      var of=document.getElementById('ownerFilter'), cur=of.value;
+      of.innerHTML='<option value="">All owners</option>'+owners.sort().map(function(o){return '<option>'+esc(o)+'</option>';}).join('');
+      if(owners.indexOf(cur)>-1) of.value=cur; }
+    drawPipe();
+  }
+  function drawPipe(){
+    if(!PIPE.length) return;
+    var owner=document.getElementById('ownerFilter').value, hf=document.getElementById('healthFilter').value;
+    var out=PIPE.filter(function(x){
+      if(owner && x.owner!==owner) return false;
+      if(hf && healthOf(x.adoption).k!==hf) return false;
+      return true;
+    });
+    out.sort(function(a,b){ var da=daysTo(a.renewal), db=daysTo(b.renewal); return (da==null?1e9:da)-(db==null?1e9:db); });
+    var th='<thead><tr><th>Customer</th><th>Owner</th><th>Renewal</th><th>Plan</th><th>Annual fee</th><th>Usage</th><th>Health</th><th>Recommended</th><th>Status</th></tr></thead>';
+    var body=out.map(function(x){
+      var h=healthOf(x.adoption), d=daysTo(x.renewal), rec=(x.acv!=null&&x.adoption!=null)?recommend(x.acv,x.adoption):null;
+      var idx=PIPE.indexOf(x);
+      return '<tr><td>'+esc(x.customer)+'<button class="pipe-open" data-i="'+idx+'">Open</button></td>'+
+        '<td>'+esc(x.owner)+'</td>'+
+        '<td>'+esc(x.renewal||'—')+(d!=null?' <span style="color:var(--muted)">('+d+'d)</span>':'')+'</td>'+
+        '<td>'+esc(x.plan||'—')+'</td>'+
+        '<td>'+(x.acv!=null?usd.format(x.acv):'—')+'</td>'+
+        '<td>'+(x.adoption!=null?x.adoption+'%':'—')+'</td>'+
+        '<td><span class="hpill h-'+h.k+'">'+h.t+'</span></td>'+
+        '<td>'+(rec?usd.format(rec.suggested)+' <span style="color:var(--muted)">('+(rec.delta>=0?'+':'')+Math.round(rec.deltaPct)+'%)</span>':'—')+'</td>'+
+        '<td>'+esc(x.status||'')+'</td></tr>';
+    }).join('');
+    document.getElementById('pipeTable').innerHTML=th+'<tbody>'+body+'</tbody>';
+    document.getElementById('pipeCount').textContent=out.length+' account'+(out.length===1?'':'s');
+    // overview
+    var acvSum=0, adk=[], due=0, risk=0;
+    out.forEach(function(x){ if(x.acv!=null) acvSum+=x.acv; if(x.adoption!=null){ adk.push(x.adoption); if(x.adoption<CONFIG.atRiskThreshold) risk++; }
+      var d=daysTo(x.renewal); if(d!=null && d<=CONFIG.outreach1Days) due++; });
+    var avgA=adk.length?adk.reduce(function(a,b){return a+b;},0)/adk.length:0;
+    document.getElementById('pipeOverview').innerHTML=
+      metric('Accounts',String(out.length),'in view')+
+      metric('Total fees',usdC.format(acvSum),'annual')+
+      metric('Avg adoption',Math.round(avgA)+'%','of commitment')+
+      metric('Renewing ≤60d',String(due),'act soon')+
+      metric('At-risk',String(risk),'under '+CONFIG.atRiskThreshold+'% adoption');
+  }
+  document.getElementById('ownerFilter').addEventListener('change',drawPipe);
+  document.getElementById('healthFilter').addEventListener('change',drawPipe);
+  document.getElementById('clearData').addEventListener('click',function(){ try{localStorage.removeItem('rc_pipe');}catch(e){} setPipe([]); });
+  document.getElementById('pipeTable').addEventListener('click',function(e){
+    var b=e.target.closest('.pipe-open'); if(!b) return; var x=PIPE[+b.getAttribute('data-i')]; if(!x) return;
+    customer.value=x.customer||''; plan.value=x.plan||'';
+    if(x.limit!=null){ limit.value=x.limit; if(x.feePct!=null) fee.value=x.feePct; }
+    else if(x.acv!=null){ limit.value=x.acv; fee.value=100; }
+    if(x.adoption!=null) adoption.value=x.adoption;
+    var iso=x.renewal && !isNaN(new Date(x.renewal)) ? new Date(x.renewal).toISOString().slice(0,10) : '';
+    if(iso) renewal.value=iso; showView('account'); render(); window.scrollTo(0,0);
+  });
+
+  /* ---- CSV ---- */
+  function parseCSV(text){
+    var rows=[], row=[], f='', q=false, i=0, c;
+    text=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+    for(;i<text.length;i++){ c=text[i];
+      if(q){ if(c==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false; } else f+=c; }
+      else { if(c==='"') q=true; else if(c===','){ row.push(f); f=''; } else if(c==='\n'){ row.push(f); rows.push(row); row=[]; f=''; } else f+=c; }
+    }
+    if(f.length||row.length){ row.push(f); rows.push(row); }
+    return rows.filter(function(r){ return r.some(function(x){return String(x).trim();}); });
+  }
+  document.getElementById('csvFile').addEventListener('change',function(e){
+    var file=e.target.files[0]; if(!file) return; var rd=new FileReader();
+    rd.onload=function(){ setPipe(toRows(parseCSV(rd.result))); }; rd.readAsText(file); e.target.value='';
+  });
+  document.getElementById('tplBtn').addEventListener('click',function(){
+    var csv='Customer,Owner,Renewal Date,Plan,Commitment,Fee %,Usage %,Status,Notes\n'+
+      'Acme Corp,Jordan,2026-08-15,Growth,100000,8,82,,High usage\n'+
+      'Globex,Priya,2026-09-02,Starter,40000,10,28,,Low usage — at risk\n'+
+      'Initech,Sam,2026-07-30,Scale,200000,7,104,Responded,Over capacity — expand\n';
+    var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='renewals-template.csv'; a.click();
+  });
+
+  /* ---- Google Sheets (bring-your-own OAuth) ---- */
+  var tokenClient=null, accessToken=null;
+  function extractId(s){ s=String(s||'').trim(); var m=/\/d\/([a-zA-Z0-9_-]{20,})/.exec(s); if(m) return m[1]; if(/^[a-zA-Z0-9_-]{20,}$/.test(s)) return s; return ''; }
+  function srcMsg(m){ document.getElementById('srcStatus').textContent=m||''; }
+  document.getElementById('connectBtn').addEventListener('click',function(){
+    var cid=document.getElementById('clientId').value.trim(), sid=extractId(document.getElementById('sheetUrl').value);
+    if(!cid){ srcMsg('Paste your OAuth Client ID first.'); return; }
+    if(!sid){ srcMsg('Paste a valid Google Sheet link.'); return; }
+    try{ localStorage.setItem('rc_client', cid); localStorage.setItem('rc_sheet', sid); }catch(e){}
+    if(!(window.google&&google.accounts&&google.accounts.oauth2)){ srcMsg('Google library still loading — try again in a second.'); return; }
+    srcMsg('Requesting access…');
+    tokenClient=google.accounts.oauth2.initTokenClient({ client_id:cid,
+      scope:'https://www.googleapis.com/auth/spreadsheets.readonly',
+      callback:function(r){ if(r&&r.access_token){ accessToken=r.access_token; loadSheet(sid); } else srcMsg('Access was not granted.'); } });
+    tokenClient.requestAccessToken();
+  });
+  function loadSheet(sid){
+    srcMsg('Loading sheet…');
+    fetch('https://sheets.googleapis.com/v4/spreadsheets/'+sid+'/values/A:Z',{headers:{Authorization:'Bearer '+accessToken},cache:'no-store'})
+      .then(function(r){ if(!r.ok) throw new Error('http'); return r.json(); })
+      .then(function(data){ var rows=toRows(data.values||[]); if(!rows.length){ srcMsg('No rows found — check headers are in row 1 of the first tab.'); return; }
+        setPipe(rows); srcMsg('Connected — '+rows.length+' rows loaded. Reopen this tab or hit refresh to pull the latest.'); })
+      .catch(function(){ srcMsg('Could not read the sheet — check the link, access, and that the Sheets API is enabled.'); });
+  }
+
+  /* ================= init ================= */
+  (function(){
+    try{ var saved=localStorage.getItem('rc_pipe'); if(saved){ var rows=JSON.parse(saved); if(rows&&rows.length) setPipe(rows); } }catch(e){}
+    try{ var cid=localStorage.getItem('rc_client'); if(cid) document.getElementById('clientId').value=cid;
+         var sid=localStorage.getItem('rc_sheet'); if(sid) document.getElementById('sheetUrl').value='https://docs.google.com/spreadsheets/d/'+sid+'/edit'; }catch(e){}
+    render();
+  })();
+})();
+</script>
+</body>
+</html>
