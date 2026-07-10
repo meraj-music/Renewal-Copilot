@@ -1,9 +1,0 @@
-Customer,Owner,Renewal Date,Plan,ACV,Adoption %,Status,Notes
-Acme Corp,Jordan,2026-08-15,Growth,48000,82,,Strong usage — renew with uplift
-Globex,Priya,2026-09-02,Starter,12000,28,,Low adoption — churn risk
-Initech,Sam,2026-07-30,Scale,180000,104,Responded,Over capacity — expansion opportunity
-Umbrella Health,Alex,2026-10-11,Growth,64000,61,,Healthy
-Wonka Labs,Priya,2026-08-05,Enterprise,240000,47,,Soft adoption — reinforce value
-Stark Industries,Jordan,2026-09-20,Scale,150000,93,,Power user — expand seats
-Wayne Co,Sam,2026-07-22,Starter,9000,15,,Very low usage — at risk
-Soylent,Alex,2026-11-01,Growth,52000,74,Responded,Trending up
