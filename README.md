@@ -8,15 +8,21 @@ Load your whole book from a CSV or a Google Sheet and work it as a pipeline.
 It's a **single HTML file**. No backend, no build step, no account. Everything runs in the
 browser and your data never leaves it.
 
+**▶ Try it live: https://meraj-music.github.io/Renewal-Copilot/**
+
 ---
 
 ## Quick start
 
-1. Download `renewal-copilot.html`.
-2. Open it in your browser (double-click), or host it anywhere static (GitHub Pages, Netlify, S3…).
-3. That's it. The **Advisor** tab works immediately. For the **Pipeline**, import a CSV.
+Just open the live app — the **Advisor** tab works immediately, and the **Pipeline** tab takes a CSV or a Google Sheet.
 
-> Tip: to serve locally, run `python3 -m http.server 8080` in the folder and open `http://localhost:8080/renewal-copilot.html`.
+Prefer to run your own copy?
+
+1. Download `renewal-copilot.html` (or clone the repo).
+2. Open it in your browser (double-click), or host it anywhere static — GitHub Pages, Netlify, S3, etc.
+3. Done. No install, no keys required (the Google Sheets option is optional — see below).
+
+> Serve locally: `python3 -m http.server 8080`, then open `http://localhost:8080/renewal-copilot.html`.
 
 ---
 
@@ -65,8 +71,8 @@ Google OAuth client — nothing is shared or hard-coded.
 3. **OAuth consent screen** → **External** → add your email under **Test users**
    (or **Internal** if you're on Google Workspace).
 4. **Credentials → Create credentials → OAuth client ID → Web application**.
-   Under **Authorized JavaScript origins** add wherever you open the app
-   (e.g. `http://localhost:8080` and your hosting URL).
+   Under **Authorized JavaScript origins** add wherever you open the app — for the live
+   version that's `https://meraj-music.github.io`; for a local copy, `http://localhost:8080`.
 5. In the app's Pipeline tab, expand **Connect a Google Sheet**, paste your **Client ID** and
    **sheet link**, and click **Connect**. Put your renewals on the **first tab**, headers in row 1.
 
