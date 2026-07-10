@@ -1,0 +1,136 @@
+# Renewal Copilot
+
+A free, open-source **renewal advisor built for Customer Success teams** — CSMs, account
+managers, and anyone who owns a book of subscription/contract renewals.
+Enter a customer's commitment, usage, and renewal date — get a clear recommendation
+(renew, expand, or retain), the numbers behind it, talking points, and a ready-to-send email.
+Load your whole renewal book from a CSV or a Google Sheet and work it as a pipeline.
+
+It's a **single HTML file**. No backend, no build step, no account. Everything runs in the
+browser and your data never leaves it.
+
+**▶ Try it live: https://meraj-music.github.io/Renewal-Copilot/**
+
+![Renewal Copilot — the Advisor gives a recommendation for one account](screenshots/ss1.png)
+
+---
+
+## Who it's for
+
+Customer Success and account teams who own renewals — **CSMs, account managers, renewal
+managers, and CS/RevOps leads**. If your week involves reaching out ahead of renewals,
+deciding whether to renew / expand / hold, and getting those emails out, this is for you.
+
+## How CS teams use it
+
+1. **Start your week in Pipeline** — import your renewal book (CSV or Google Sheet) and see
+   who's renewing soon, who's at risk, and who's due for outreach, sorted soonest-first.
+2. **Open an account** — one click loads it into the Advisor with the recommended play
+   (renew, expand, or retain), the numbers behind it, and a churn read.
+3. **Reach out** — copy the ready-made talking points or the renewal email and send.
+4. **Repeat** — filter by owner to work just your accounts, and revisit as renewals approach.
+
+---
+
+## Quick start
+
+Just open the live app — the **Advisor** tab works immediately, and the **Pipeline** tab takes a CSV or a Google Sheet.
+
+Prefer to run your own copy?
+
+1. Download `renewal-copilot.html` (or clone the repo).
+2. Open it in your browser (double-click), or host it anywhere static — GitHub Pages, Netlify, S3, etc.
+3. Done. No install, no keys required (the Google Sheets option is optional — see below).
+
+> Serve locally: `python3 -m http.server 8080`, then open `http://localhost:8080/renewal-copilot.html`.
+
+---
+
+## What it does
+
+**Advisor** — for one account:
+- A recommendation based on usage: **Expand** (high usage), **Renew & grow** (healthy),
+  **Renew flat** (soft), or **Retain** (churn risk). It leads with value and never volunteers a discount.
+- The annual fee (service fee % × commitment), a suggested renewal fee with the uplift/expansion %,
+  the effective rate paid vs. your on-demand rate, the break-even point, and a churn-risk read.
+- A visual: usage meter + committed fee vs. on-demand vs. recommended.
+- Talking points and a one-click **email draft** (renewal heads-up, final reminder, or recommendation).
+- A renewal-timing flag (outreach + final-reminder windows).
+
+![Advisor — talking points and a ready-to-send email draft](screenshots/ss2.png)
+
+**Pipeline** — for your whole book:
+- Import a **CSV** or connect a **Google Sheet** (see below).
+- Search by name, filter by owner and health; sorted soonest-first.
+- Overview metrics: accounts, total fees, avg usage, renewing ≤60 days, at-risk.
+- Health + recommended fee per row; click **Open** to load any account into the Advisor.
+- Data persists in your browser (localStorage) so it's there when you come back.
+
+![Pipeline — your whole renewal book, filterable and searchable](screenshots/ss3.png)
+
+---
+
+## CSV format
+
+Headers in row 1 (order doesn't matter — columns are matched by name). Use the in-app
+**Download CSV template** button, or:
+
+```
+Customer,Owner,Renewal Date,Plan,Commitment,Fee %,Usage %,Status,Notes
+Acme Corp,Jordan,2026-08-15,Growth,100000,8,82,,High usage
+Globex,Priya,2026-09-02,Starter,40000,10,28,,Low usage
+```
+
+Recognized column names (any one works): Customer/Account/Company · Owner/CSM/Rep ·
+Renewal Date · Plan/Tier · Commitment/Spend limit · Fee %/Service fee · Usage/Adoption % ·
+Status · Notes. The annual fee is computed as **Fee % × Commitment** — or add an
+`Annual fee`/`ACV` column directly if you bill a flat amount.
+
+---
+
+## Connect a Google Sheet (optional, ~5–10 min)
+
+Live data from a Google Sheet you own or that's shared with you. Each user brings their own
+Google OAuth client — nothing is shared or hard-coded.
+
+1. **Google Cloud Console** → create/pick a project.
+2. **APIs & Services → Library** → enable **Google Sheets API**.
+3. **OAuth consent screen** → **External** → add your email under **Test users**
+   (or **Internal** if you're on Google Workspace).
+4. **Credentials → Create credentials → OAuth client ID → Web application**.
+   Under **Authorized JavaScript origins** add wherever you open the app — for the live
+   version that's `https://meraj-music.github.io`; for a local copy, `http://localhost:8080`.
+5. In the app's Pipeline tab, expand **Connect a Google Sheet**, paste your **Client ID** and
+   **sheet link**, and click **Connect**. Put your renewals on the **first tab**, headers in row 1.
+
+The app requests **read-only** access to Sheets, through your own Google account and permissions —
+it only reads sheets you can already open.
+
+---
+
+## Customize (no code-diving)
+
+Open the file and edit the `CONFIG` object near the top of the `<script>`:
+
+| Setting | What it does |
+|---|---|
+| `currency` | ISO code, e.g. `"USD"`, `"EUR"`, `"GBP"` |
+| `upliftPct` | Standard renewal uplift for healthy accounts (default 7%) |
+| `expansionPct` | Suggested expansion for high-adoption accounts (default 20%) |
+| `upsellThreshold` / `healthyThreshold` / `atRiskThreshold` | Adoption % cutoffs for the plays |
+| `outreach1Days` / `outreach2Days` | Outreach and final-reminder windows |
+| `signatureRole` / `githubUrl` | Email signature line and footer link |
+
+---
+
+## Privacy
+
+100% client-side. CSV data is parsed in your browser and cached in `localStorage`. The Google
+Sheets connection uses your own OAuth client and a read-only token held only in the page session.
+No server, no tracking, nothing leaves your machine.
+
+---
+
+## License
+
+MIT — do whatever you like. Attribution appreciated but not required.
