@@ -1,9 +1,0 @@
-Customer,Owner,Renewal Date,Plan,Commitment,Fee %,Usage %,Status,Notes
-Acme Corp,Jordan,2026-08-15,Growth,100000,8,82,,Strong usage — renew with uplift
-Globex,Priya,2026-09-02,Starter,40000,10,28,,Low usage — churn risk
-Initech,Sam,2026-07-30,Scale,250000,7,104,Responded,Over capacity — expansion opportunity
-Umbrella Health,Alex,2026-10-11,Growth,120000,8,61,,Healthy
-Wonka Labs,Priya,2026-08-05,Enterprise,500000,6,47,,Soft usage — reinforce value
-Stark Industries,Jordan,2026-09-20,Scale,250000,7,93,,Power user — expand
-Wayne Co,Sam,2026-07-22,Starter,30000,10,15,,Very low usage — at risk
-Soylent,Alex,2026-11-01,Growth,110000,8,74,Responded,Trending up
